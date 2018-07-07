@@ -11,7 +11,7 @@ class bahan extends Model
     public $timestamps = true;
     public function produk()
     {
-    	return $this->hasmany('app\produk','bahan_id');
+    	return $this->hasmany('App\produk','bahan_id');
     }
 }
 

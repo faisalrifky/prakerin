@@ -4,8 +4,8 @@
 	<div class="container">
 		<div class="col-md-12">
 			<div class="panel panel-primary">
-			  <div class="panel-heading">Data bahan_bahan
-			  	<div class="panel-title pull-right"><a href="{{ route('bahan.create') }}">Tambah</a>
+			  <div class="panel-heading">Data produk
+			  	<div class="panel-title pull-right"><a href="{{ route('produk.create') }}">Tambah</a>
 			  	</div>
 			  </div>
 			  <div class="panel-body">
@@ -14,26 +14,33 @@
 				  	<thead>
 			  		<tr>
 			  		  <th>No</th>
-					  <th>nama bahan baku</th>
-					  <th>harga bahan</th>
+					  <th>nama</th>
+					  <th>jenis </th>
+					  <th>harga</th>
+					  <th>bahan</th>
+					  <th>kategori</th>
 					  <th colspan="3">Action</th>
 			  		</tr>
 				  	</thead>
 				  	<tbody>
+				  		<?php $nomor=1;?>
 				  		@php $no = 1; @endphp
-				  		@foreach($bahan_bahan as $data)
+				  		@foreach($produk as $data)
 				  	  <tr>
 				    	<td>{{ $no++ }}</td>
-				    	<td>{{ $data->bahan_bahans }}</td>
-				    	<td><p>{{ $data->harga }}</p></td>
+				    	<td>{{ $data->nama }}</td>
+				    	<td>{{ $data->jenis_id }}</td>
+				    	<td>{{ $data->harga }}</td>
+				    	<td>{{ $data->bahan_id }}</td>
+				    	<td><p>{{ $data->kategori_id }}</p></td>
 						<td>
-							<a class="btn btn-warning" href="{{ route('bahan.edit',$data->id) }}">Edit</a>
+							<a class="btn btn-warning" href="{{ route('produk.edit',$data->id) }}">Edit</a>
 						</td>
 						<td>
-							<a href="{{ route('bahan.show',$data->id) }}" class="btn btn-success">Show</a>
+							<a href="{{ route('produk.show',$data->id) }}" class="btn btn-success">Show</a>
 						</td>
 						<td>
-							<form method="bahan" action="{{ route('bahan.destroy',$data->id) }}">
+							<form method="post" action="{{ route('produk.destroy',$data->id) }}">
 								<input name="_token" type="hidden" value="{{ csrf_token() }}">
 								<input type="hidden" name="_method" value="DELETE">
 

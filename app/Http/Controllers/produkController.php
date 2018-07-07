@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\kategori;
 use App\produk;
 use App\bahan;
+use App\jenis;
+use App\kategori;
 use file;
 use Session;
 class produkController extends Controller
@@ -18,11 +19,6 @@ class produkController extends Controller
      public function index()
     {
         $produk = produk::with('bahan')->get();
-        return view('produk.index',compact('produks'));
-    }
-    public function produk()
-    {
-        $produk = produk::all();
         return view('produk.index',compact('produk'));
     }
 
@@ -33,9 +29,10 @@ class produkController extends Controller
      */
     public function create()
     {
-        $produk = produk::all();
         $bahan = bahan::all();
-        return view('produk.create',compact('bahan'));
+        $jenis = jenis::all();
+        $kategori = kategori::all();
+        return view('produk.create',compact('bahan','jenis','kategori'));
     }
 
 
@@ -48,27 +45,21 @@ class produkController extends Controller
     public function store(Request $request)
     {
 
+       
         $this->validate($request,[
             'nama' => 'required|',
-            'jenis' => 'required|',
             'harga' => 'required|',
-            'bahan' => 'required|',
-            'kategori' => 'required'
+            'bahan_id' => 'required|',
+            'jenis_id' => 'required|',
+            'kategori_id' => 'required'
         ]);
 
         $produk = new produk;
         $produk->nama = $request->nama;
-        $produk->jenis = $request->jenis;
         $produk->harga = $request->harga;
-        $produk->bahan = $request->bahan;
-        $produk->kategori = $request->kategori;
-       
-    if($Request->hasfile('foto')){
-        $file = $Request->file('foto');
-        $destinationPath = public_path() .DIRECTORY_SEPARATOR . '/assets/img/produk';
-        $filename = src_random(6).'_'.$file->getClientOriginalName();
-        $uploadSuccess = $file->move($destinationPath,$filename);
-    }
+        $produk->bahan_id = $request->bahan_id;
+        $produk->jenis_id = $request->jenis_id;
+        $produk->kategori_id = $request->kategori_id;
         $produk->save();
         return redirect()->route('produk.index');
     }
@@ -82,7 +73,7 @@ class produkController extends Controller
     public function show($id)
     {
         $produk = produk::findOrFail($id);
-        return view('produk.show',compact('produks'));
+        return view('produk.show',compact('produk'));
     }
 
     /**
@@ -97,7 +88,11 @@ class produkController extends Controller
         $produk = produk::findOrFail($id);
         $bahan = bahan::all();
         $selectedbahan = produk::findOrFail($id)->bahan_id;
-        return view('produk.edit',compact('produks','bahan','selectedbahan'));
+        $jenis = jenis::all();
+        $selectedjenis = produk::findOrFail($id)->jenis_id;
+        $kategori = kategori::all();
+        $selectedkategori = kategori::findOrFail($id)->kategori_id;
+        return view('produk.edit',compact('produk','bahan','selectedjenis','selectedkategori'));
     }
 
     /**
@@ -112,39 +107,18 @@ class produkController extends Controller
         // unique dihapus karena ketika update data produk tidak diubah juga tidak apa-apa
         $this->validate($request,[
            'nama' => 'required|',
-            'jenis' => 'required|',
             'harga' => 'required|',
-            'bahan' => 'required|',
-            'kategori' => 'required'
+           'bahan_id' => 'required|',
+            'jenis_id' => 'required|',
+            'kategori_id' => 'required'
         ]);
 
        $produk = new produk;
         $produk->nama = $request->nama;
-        $produk->jenis = $request->jenis;
         $produk->harga = $request->harga;
-        $produk->bahan = $request->bahan;
-        $produk->kategori = $request->kategori;
-        
-        if($Request->hasfile('foto')){
-        $file = $Request->file('foto');
-        $destinationPath = public_path() .DIRECTORY_SEPARATOR . '/assets/img/produk';
-        $filename = src_random(6).'_'.$file->getClientOriginalName();
-        $uploadSuccess = $file->move($destinationPath,$filename);
-    }
-
-        if ($produk->foto) {
-            $old_foto = $produk->foto;
-            $file_path = public_path() . DIRECTORY_SEPARATOR . '/assets/img/produk' . DIRECTORY_SEPARATOR . $produk->foto
-            
-            try {
-                file::delete($filepath);
-            } catch (FileNotFoundException $e) {
-                
-            }
-            # code...
-        }
-        $produk->foto = $filename;
-    }
+        $produk->bahan_id = $request->bahan_id;
+        $produk->jenis_id = $request->jenis_id;
+        $produk->kategori_id = $request->kategori_id;
         $produk->save();
         Session::flash("flash_notification",["level"=>"success","message"=>"Data Berhasil Dihapus"]);
         return redirect()->route('produk.index');
@@ -160,15 +134,6 @@ class produkController extends Controller
     {
         // delete data beradasarkan id
         $produk = produk::findOrFail($id);
-
-        if($produk->file_gambar){
-            $old_foto = $produk->foto;
-            $file_path = public_path() . DIRECTORY_SEPARATOR . '/assets/img/produk' . DIRECTORY_SEPARATOR . $produk->foto
-            try {
-                file::delete($filepath);
-            } catch (FileNotFoundException $e) {
-                
-            }
         $produk->delete();
         Session::flash("flash_notification",["level"=>"success","message"=>"Data Berhasil Dihapus"]);
         return redirect()->route('produk.index');  

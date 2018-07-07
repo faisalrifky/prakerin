@@ -16,10 +16,7 @@ class CreateProduksTable extends Migration
         Schema::create('produks', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nama');
-            $table->string('jenis');
             $table->string('harga');
-            $table->string('bahan');
-            $table->string('kategori');
             $table->unsignedInteger('bahan_id');
             $table->foreign('bahan_id')->references('id')->on('bahan_bahans')->ondelete('cascade');
             $table->unsignedInteger('jenis_id');
